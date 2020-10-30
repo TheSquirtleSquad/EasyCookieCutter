@@ -8,4 +8,4 @@ export const DEFAULT_BEVEL = false;
 export const DEFAULT_ROUND_HANDLE = false;
 export const DEFAULT_SIZE = 76;
 
-export const MAX_DIM = 10;
+export const MAX_DIM = 500;
