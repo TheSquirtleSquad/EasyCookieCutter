@@ -47,6 +47,10 @@ class CookieCutterApp extends LitElement {
         if (!event.detail.imageSrc || !canvasElement || !imageSrcElement) return;
 
         imageSrcElement.src = event.detail.imageSrc;
+        imageSrcElement.height = event.detail.imageHeight;
+        imageSrcElement.width = event.detail.imageWidth;
+
+        console.log(imageSrcElement)
 
         processImage(
             this.cv,

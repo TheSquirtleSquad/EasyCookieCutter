@@ -15,15 +15,27 @@ class ClipartSelector extends LitElement {
       return null;
     }
 
+
+    var img = new Image();
     const withExt = e.target.files[0].name
+    img.src = URL.createObjectURL(e.target.files[0]);
     const event = new CustomEvent("image-changed", {
       detail: {
-        imageSrc: URL.createObjectURL(e.target.files[0]),
+        imageSrc: img.src,
+        imageHeight: img.height,
+        imageWidth: img.width,
         saveFileName: withExt.replace(/\.[^/.]+$/, "")
       }
     })
 
-    this.dispatchEvent(event);
+    img.onload = () => {
+      /* we can only get the image dimensions after it's loaded */
+      event.detail.imageHeight = img.height;
+      event.detail.imageWidth = img.width;
+
+      this.dispatchEvent(event);
+      console.log(img, event.detail)
+    };
   }
 
   handleBtnClick() {

@@ -10,6 +10,8 @@ export interface camera_pos_t {
 
 export interface CookieState_t {
     imageSrc: string,
+    imageHeight: number,
+    imageWidth: number,
     saveFileName: string,
     thickness: number,
     depth: number,

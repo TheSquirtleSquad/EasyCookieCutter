@@ -13,8 +13,8 @@ export default function processImage(
     canvasElement: Element | null) {
 
     /* height and width of image can't be zero */
-    imgElement.height = 1;
-    imgElement.width = 1;
+    imgElement.height = imgElement.height || 1;
+    imgElement.width = imgElement.width || 1;
 
     console.log('canvasElement: ', canvasElement instanceof HTMLCanvasElement)
 
@@ -44,6 +44,8 @@ export default function processImage(
     onImageLoad();
 
     function onImageLoad() {
+
+        console.log(imgElement)
 
         //Add Some Padding so images close to the edge still work
         const srcPre = cv.imread(imgElement);

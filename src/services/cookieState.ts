@@ -14,6 +14,8 @@ import {
 class CookieState {
     private State: CookieState_t = {
         imageSrc: "",
+        imageHeight: 0,
+        imageWidth: 0,
         saveFileName: "",
         thickness: DEFAULT_THICKNESS,
         depth: DEFAULT_DEPTH,
