@@ -55,7 +55,8 @@ class CookieCutterApp extends LitElement {
         processImage(
             this.cv,
             imageSrcElement,
-            canvasElement);
+            canvasElement,
+            event.detail.saveFileName);
     }
 
     render() {

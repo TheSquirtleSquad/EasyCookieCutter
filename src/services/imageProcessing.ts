@@ -4,13 +4,14 @@ import { CookieState_t } from "../types";
 import cookieState from "./cookieState";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
-
+import { STLExporter } from 'three/examples/jsm/exporters/STLExporter.js';
 
 
 export default function processImage(
     cv: any,
     imgElement: Element | null,
-    canvasElement: Element | null) {
+    canvasElement: Element | null,
+    saveFilename: string) {
 
     /* height and width of image can't be zero */
     imgElement.height = imgElement.height || 1;
@@ -34,12 +35,40 @@ export default function processImage(
     const renderer = new THREE.WebGLRenderer({ alpha: true });
     const camera = new THREE.PerspectiveCamera(75, 200 / 200, 2, 1000);
     const controls = new OrbitControls(camera, renderer.domElement);
+    const exporter = new STLExporter();
+
 
     var contours: any;
     var contourMap: any;
     var contourNumMap: any;
     var hierarchy: any;
-    // var lastCnt: any;
+    var lastCnt: any;
+    var panel3d = document.getElementById('threeoutput')
+
+    var width = panel3d.clientWidth
+    var height = 300
+    if (width < 300) {
+    height = width
+    }
+
+
+    renderer.setSize(width, height);
+    camera.up.set(0, 0, 1)
+    camera.position.z = 100;
+    camera.position.x = 40;
+    camera.position.y = 122;
+    camera.rotation.z = -3;
+    camera.rotation.x = 0;
+    camera.rotation.y = 0;
+    camera.lookAt(new THREE.Vector3(50, 0, 50)); // Set look at coordinate like this
+    panel3d.appendChild(renderer.domElement);
+
+    panel3d.appendChild(renderer.domElement);
+
+    
+    const buttonExportASCII = document.getElementById('exportASCII');
+    buttonExportASCII.addEventListener('click', saveTextAsFile);
+
 
     onImageLoad();
 
@@ -150,9 +179,9 @@ export default function processImage(
         src.delete(); dst.delete();
 
 
-        // lastCnt = cnt
-        // generateSTL(cnt)
-        // animate();
+        lastCnt = cnt
+        generateSTL(cnt)
+        animate();
 
     }
     /**
@@ -168,8 +197,8 @@ export default function processImage(
 
         const bevelCutter = Boolean(cookieState.get().cutterBevel);
         const handleRound = Boolean(cookieState.get().handleRound);
-        console.log(bevelCutter)
-        console.log(handleRound)
+
+
         var extrudeSettings = {
             steps: 1,
             depth: 0,
@@ -387,18 +416,18 @@ export default function processImage(
     const cameraDebugElem = document.querySelector("#cameraDebug");
 
     function camera_debug() {
-        if (!cameraDebugElem) return;
+        // if (!cameraDebugElem) return;
 
-        cookieState.update(<CookieState_t>{
-            camera_pos: {
-                x: Number(camera.position.x.toFixed(3)),
-                y: Number(camera.position.y.toFixed(3)),
-                z: Number(camera.position.z.toFixed(3)),
-                rx: Number(camera.rotation.x.toFixed(3)),
-                ry: Number(camera.rotation.y.toFixed(3)),
-                rz: Number(camera.rotation.z.toFixed(3)),
-            }
-        });
+        // cookieState.update(<CookieState_t>{
+        //     camera_pos: {
+        //         x: Number(camera.position.x.toFixed(3)),
+        //         y: Number(camera.position.y.toFixed(3)),
+        //         z: Number(camera.position.z.toFixed(3)),
+        //         rx: Number(camera.rotation.x.toFixed(3)),
+        //         ry: Number(camera.rotation.y.toFixed(3)),
+        //         rz: Number(camera.rotation.z.toFixed(3)),
+        //     }
+        // });
     }
 
 
@@ -417,7 +446,7 @@ export default function processImage(
                 let srcPre = cv.imread(imgElement);
                 let dst = new cv.Mat();
                 // You can try more different parameters
-                offset = 10
+                const offset = 10
                 cv.copyMakeBorder(srcPre, dst, offset, offset, offset, offset, cv.BORDER_REPLICATE);
 
 
@@ -443,7 +472,7 @@ export default function processImage(
                 let cnt = contours.get(co);
 
                 //Limit the Output Size
-                let scale = maxdim / Math.max(dst.cols, dst.rows)
+                let scale = MAX_DIM / Math.max(dst.cols, dst.rows)
                 let dsize = new cv.Size(scale * dst.cols, scale * dst.rows);
                 cv.resize(dst, dst, dsize, 0, 0, cv.INTER_LINEAR);
 
@@ -457,4 +486,33 @@ export default function processImage(
             };
         };
     };
+
+    //https://stackoverflow.com/questions/609530/download-textarea-contents-as-a-file-using-only-javascript-no-server-side
+    function saveTextAsFile() {
+        var fileNameToSaveAs = saveFilename + ".stl"
+        console.log(fileNameToSaveAs)
+        generateSTL(lastCnt)
+        var textToWrite = exporter.parse(scene);
+
+        var textFileAsBlob = new Blob([textToWrite], { type: 'text/plain' });
+        var downloadLink = document.createElement("a");
+        downloadLink.download = fileNameToSaveAs;
+        downloadLink.innerHTML = "Download File";
+        if (window.webkitURL != null) {
+            // Chrome allows the link to be clicked
+            // without actually adding it to the DOM.
+            downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
+        }
+        else {
+            // Firefox requires the link to be added to the DOM
+            // before it can be clicked.
+            downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+            downloadLink.onclick = destroyClickedElement;
+            downloadLink.style.display = "none";
+            document.body.appendChild(downloadLink);
+        }
+
+        downloadLink.click();
+    }
+
 };
