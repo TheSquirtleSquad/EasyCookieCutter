@@ -43,8 +43,10 @@ class CookieCutterApp extends LitElement {
         CookieState.update(event.detail);
 
         const canvasElement = document.getElementById('canvasOutput');
-        const imageSrcElement = document.querySelector("#imageSrc");
+        const imageSrcElement: any = document.querySelector("#imageSrc");
         if (!event.detail.imageSrc || !canvasElement || !imageSrcElement) return;
+
+        imageSrcElement.src = event.detail.imageSrc;
 
         processImage(
             this.cv,
