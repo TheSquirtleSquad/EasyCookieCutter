@@ -26,6 +26,7 @@ class CookieSize extends LitElement {
 
   currentIndex: number = 2;
   currentValue = this.values[this.currentIndex];
+  currentLabel = this.labels[this.currentIndex];
 
   handleSliderChange(e: HTMLInputEvent) {
 
@@ -35,6 +36,7 @@ class CookieSize extends LitElement {
 
     this.currentIndex = Number(e.target.value);
     this.currentValue = this.values[Number(e.target.value)];
+    this.currentLabel = this.labels[Number(e.target.value)];
 
     const event = new CustomEvent("cookie-input-changed", {
       detail: <CookieState_t>{
@@ -71,7 +73,7 @@ class CookieSize extends LitElement {
           <option>4</option>
       </datalist>
 
-      <output id="rangevalue">${this.currentValue}in</output>
+      <output id="rangevalue"> ${this.currentLabel} in</output>
     </container>
     `;
   }

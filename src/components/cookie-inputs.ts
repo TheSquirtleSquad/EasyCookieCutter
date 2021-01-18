@@ -109,19 +109,6 @@ class CookieInputs extends LitElement {
         </mwc-select>
       </select-container>
 
-      <checkbox-container>
-        <mwc-checkbox id="cutterBevel" @change=${(e: HTMLInputEvent) => this.handleChange(e, ChangeType.IS_BEVELED)}></mwc-checkbox>
-        <label for="cutterBevel">
-          Beveled Cutter
-        </label>
-      </checkbox-container>
-
-      <checkbox-container>
-        <mwc-checkbox @change="${(e: HTMLInputEvent) => this.handleChange(e, ChangeType.HAS_ROUND_EDGES)}" id="handleRound"></mwc-checkbox>
-        <label for="handleRound">
-          Round Handle Edges
-        </label>
-      </checkbox-container>
     </container>
 
     `;
